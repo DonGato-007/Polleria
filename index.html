@@ -377,7 +377,7 @@
     }
     .categories-track {
       display: flex; gap: 2.5rem;
-      animation: scrollCategories 25s linear infinite;
+      animation: scrollCategories 50s linear infinite;
     }
     .categories-track:hover {
       animation-play-state: paused;
@@ -408,6 +408,26 @@
     .ci-caldo   { background: linear-gradient(135deg,#008080,#005050); }
     .ci-milanesa{ background: linear-gradient(135deg,#4a8a00,#2a5000); }
     .ci-bebidas { background: linear-gradient(135deg,#0066cc,#003399); }
+
+    /* Category dots for mobile */
+    .category-dots {
+      display: none;
+      justify-content: center;
+      gap: .5rem;
+      margin-top: .5rem;
+    }
+    .category-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.3);
+      transition: all .3s;
+      cursor: pointer;
+    }
+    .category-dot.active {
+      background: var(--accent2);
+      transform: scale(1.3);
+    }
 
     /* ===== PRODUCT CARDS ===== */
     .dishes-grid {
@@ -469,6 +489,33 @@
         min-width: 280px;
         max-width: 280px;
         scroll-snap-align: start;
+      }
+
+      /* Mobile categories carousel */
+      .categories-scroll {
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding: 1rem 1rem;
+      }
+      .categories-scroll::-webkit-scrollbar { display: none; }
+      .categories-track {
+        animation: none;
+        justify-content: flex-start;
+        gap: 1.5rem;
+      }
+      .cat-item {
+        scroll-snap-align: center;
+        min-width: 90px;
+        flex-shrink: 0;
+      }
+      .cat-icon {
+        width: 65px;
+        height: 65px;
+      }
+      .category-dots {
+        display: flex;
       }
     }
 
@@ -978,6 +1025,12 @@
           <div class="cat-label">Bebidas</div>
         </div>
       </div>
+    </div>
+    <!-- Category dots for mobile -->
+    <div class="category-dots">
+      <div class="category-dot active"></div>
+      <div class="category-dot"></div>
+      <div class="category-dot"></div>
     </div>
   </div>
 </section>
@@ -1604,6 +1657,60 @@
 
   // Initialize cart on page load
   updateCartUI();
+
+  // Category carousel dots for mobile
+  const categoriesScroll = document.querySelector('.categories-scroll');
+  const categoryDots = document.querySelectorAll('.category-dot');
+  const catItems = document.querySelectorAll('.cat-item');
+  
+  if (categoriesScroll && categoryDots.length > 0 && window.innerWidth <= 700) {
+    let isScrolling;
+    
+    categoriesScroll.addEventListener('scroll', () => {
+      // Clear timeout if scrolling
+      clearTimeout(isScrolling);
+      
+      // Set timeout to run after scrolling ends
+      isScrolling = setTimeout(() => {
+        const scrollLeft = categoriesScroll.scrollLeft;
+        const scrollWidth = categoriesScroll.scrollWidth - categoriesScroll.clientWidth;
+        const scrollPercentage = scrollLeft / scrollWidth;
+        
+        // Calculate which dot should be active (0, 1, or 2)
+        let activeDotIndex = 0;
+        if (scrollPercentage > 0.66) {
+          activeDotIndex = 2;
+        } else if (scrollPercentage > 0.33) {
+          activeDotIndex = 1;
+        }
+        
+        // Update dots
+        categoryDots.forEach((dot, index) => {
+          if (index === activeDotIndex) {
+            dot.classList.add('active');
+          } else {
+            dot.classList.remove('active');
+          }
+        });
+      }, 50);
+    });
+
+    // Click on dots to scroll to sections
+    categoryDots.forEach((dot, index) => {
+      dot.addEventListener('click', () => {
+        const scrollWidth = categoriesScroll.scrollWidth - categoriesScroll.clientWidth;
+        let targetScroll = 0;
+        
+        if (index === 1) {
+          targetScroll = scrollWidth * 0.5;
+        } else if (index === 2) {
+          targetScroll = scrollWidth;
+        }
+        
+        categoriesScroll.scrollTo({ left: targetScroll, behavior: 'smooth' });
+      });
+    });
+  }
 </script>
 </body>
 </html>
