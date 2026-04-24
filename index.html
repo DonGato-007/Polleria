@@ -409,6 +409,14 @@
     .ci-milanesa{ background: linear-gradient(135deg,#4a8a00,#2a5000); }
     .ci-bebidas { background: linear-gradient(135deg,#0066cc,#003399); }
 
+    /* Hide product sections by default */
+    .product-section {
+      display: none;
+    }
+    .product-section.active {
+      display: block;
+    }
+
     /* Category dots for mobile */
     .category-dots {
       display: none;
@@ -1036,7 +1044,7 @@
 </section>
 
 <!-- POLLO A LA BRASA -->
-<section class="gap section-dark" id="sec-brasa">
+<section class="gap section-dark product-section active" id="sec-brasa">
   <div class="container">
     <div class="section-heading">
       <h2>🍗 Pollo a la Brasa</h2>
@@ -1100,7 +1108,7 @@
 </section>
 
 <!-- MIXTOS -->
-<section class="gap" id="sec-mixto">
+<section class="gap product-section" id="sec-mixto">
   <div class="container">
     <div class="section-heading">
       <h2>🍛 Pollo a la Brasa Mixto</h2>
@@ -1136,7 +1144,7 @@
 </section>
 
 <!-- BROASTER -->
-<section class="gap section-dark" id="sec-broaster">
+<section class="gap section-dark product-section" id="sec-broaster">
   <div class="container">
     <div class="section-heading">
       <h2>🍳 Broaster</h2>
@@ -1172,7 +1180,7 @@
 </section>
 
 <!-- SALCHIPAPA -->
-<section class="gap" id="sec-salchi">
+<section class="gap product-section" id="sec-salchi">
   <div class="container">
     <div class="section-heading">
       <h2>🌭 Salchipapa</h2>
@@ -1196,7 +1204,7 @@
 </section>
 
 <!-- CHAUFA -->
-<section class="gap section-dark" id="sec-chaufa">
+<section class="gap section-dark product-section" id="sec-chaufa">
   <div class="container">
     <div class="section-heading">
       <h2>🍚 Arroz Chaufa</h2>
@@ -1220,7 +1228,7 @@
 </section>
 
 <!-- CALDOS -->
-<section class="gap" id="sec-caldo">
+<section class="gap product-section" id="sec-caldo">
   <div class="container">
     <div class="section-heading">
       <h2>🍲 Caldos y Sopas</h2>
@@ -1268,7 +1276,7 @@
 </section>
 
 <!-- MILANESA -->
-<section class="gap section-dark" id="sec-milanesa">
+<section class="gap section-dark product-section" id="sec-milanesa">
   <div class="container">
     <div class="section-heading">
       <h2>🥩 Milanesa</h2>
@@ -1292,7 +1300,7 @@
 </section>
 
 <!-- BEBIDAS -->
-<section class="gap" id="sec-bebidas">
+<section class="gap product-section" id="sec-bebidas">
   <div class="container">
     <div class="section-heading">
       <h2>🥤 Bebidas</h2>
@@ -1508,9 +1516,33 @@
     else st.classList.remove('show');
   });
 
-  // SCROLL TO SECTION
+  // SCROLL TO SECTION - Now shows/hides product sections
   function scrollToSection(id) {
-    document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Hide all product sections
+    const allSections = document.querySelectorAll('.product-section');
+    allSections.forEach(section => {
+      section.classList.remove('active');
+    });
+    
+    // Show the selected section
+    const targetSection = document.getElementById(id);
+    if (targetSection) {
+      targetSection.classList.add('active');
+      // Smooth scroll to the section
+      targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    // Update active state on category items
+    const allCatItems = document.querySelectorAll('.cat-item');
+    allCatItems.forEach(item => {
+      item.classList.remove('active');
+    });
+    
+    // Add active class to clicked category items (including duplicates)
+    const clickedItems = document.querySelectorAll(`.cat-item[onclick="scrollToSection('${id}')"]`);
+    clickedItems.forEach(item => {
+      item.classList.add('active');
+    });
   }
 
   // PEDIR WHATSAPP
